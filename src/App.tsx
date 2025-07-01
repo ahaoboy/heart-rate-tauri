@@ -13,41 +13,20 @@ const COLORS = [
 
 const DEFAULT_FONT_SIZE = 64;
 
-function measureTextSizeWithDOM(text: string, fontStyles: Record<string, string>) {
-  const span = document.createElement('span');
-
-  Object.assign(span.style, {
-    position: 'absolute',
-    visibility: 'hidden',
-    whiteSpace: 'nowrap',
-    ...fontStyles
-  });
-
-  span.textContent = text;
-
-  document.body.appendChild(span);
-
-  const size = {
-    width: span.offsetWidth,
-    height: span.offsetHeight
-  };
-  document.body.removeChild(span);
-  return size;
-}
-
 // ♥ (U+2665), ♡ (U+2661), and ❤ (U+2764)
 const HEART = "❤"
 
-function Child({ style, n }: { style: number, n: Accessor<number> }) {
-  if (style === 0) {
-    return n()
+function Child({ style, n }: { style: Accessor<number>, n: Accessor<number> }) {
+  console.log('---style', style())
+  if (style() === 0) {
+    return <>{n()}</>
   }
 
-  if (style === 1) {
-    return [HEART, n].join("")
+  if (style() === 1) {
+    return <>{[HEART, n()].join("")}</>
   }
 
-  if (style === 2) {
+  if (style() === 2) {
     const len = n.toString().length
     let textSize = DEFAULT_FONT_SIZE
     if (len <= 1) {
@@ -60,7 +39,7 @@ function Child({ style, n }: { style: number, n: Accessor<number> }) {
     return <><div id='heart'>{HEART}</div><div id="text" style={{ "font-size": `${textSize}px` }}>{n()}</div></>
   }
 
-  return n()
+  return <>{n()}</>
 }
 
 function getSize(style: number, n: number) {
@@ -76,7 +55,7 @@ function getSize(style: number, n: number) {
   }
 
   // text in heart
-  if (style === 1) {
+  if (style === 2) {
     return { w: DEFAULT_FONT_SIZE, h: DEFAULT_FONT_SIZE }
   }
 
@@ -101,7 +80,13 @@ function App() {
     const inputHandle = await listen<number>("heart-rate", (event) => {
       setRate((+event.payload))
     })
-    return inputHandle
+    const styleHandle = await listen<number>("set-style", (event) => {
+      setStyle((+event.payload))
+    })
+    return () => {
+      inputHandle();
+      styleHandle();
+    }
   })
 
   createEffect(async () => {
@@ -142,7 +127,7 @@ function App() {
       onmouseup={() => {
         drag = false
       }}
-    ><Child style={2} n={getRate} /></div>
+    ><Child style={getStyle} n={getRate} /></div>
   );
 }
 
