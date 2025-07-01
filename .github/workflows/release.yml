@@ -39,7 +39,7 @@ jobs:
       - uses: easy-install/easy-setup@v1
         with:
           url: https://github.com/easy-install/easy-install
-          bin: ei
+          name: ei
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
