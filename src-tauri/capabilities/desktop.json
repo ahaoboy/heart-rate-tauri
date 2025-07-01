@@ -9,6 +9,7 @@
     "main"
   ],
   "permissions": [
+    "store:default",
     "core:default",
     "opener:default",
     "shell:default",
