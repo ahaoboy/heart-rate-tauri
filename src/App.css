@@ -52,7 +52,7 @@ html, body {
 #heart {
   display: flex;
   font-size: 64px;
-  color: white;
+  color: black;
 }
 
 #text {

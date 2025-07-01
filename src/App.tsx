@@ -16,42 +16,40 @@ const DEFAULT_FONT_SIZE = 64;
 // ♥ (U+2665), ♡ (U+2661), and ❤ (U+2764)
 const HEART = "❤"
 
-function Child({ style, n }: { style: Accessor<number>, n: Accessor<number> }) {
-  console.log('---style', style())
-  if (style() === 0) {
-    return <>{n()}</>
-  }
+import { Switch, Match } from "solid-js";
 
-  if (style() === 1) {
-    return <>{[HEART, n()].join("")}</>
-  }
-
-  if (style() === 2) {
-    const len = n.toString().length
-    let textSize = DEFAULT_FONT_SIZE
-    if (len <= 1) {
-      textSize = DEFAULT_FONT_SIZE
-    } else if (len <= 2) {
-      textSize = DEFAULT_FONT_SIZE / 2
-    } else if (len <= 3) {
-      textSize = (DEFAULT_FONT_SIZE / 3) || 0
-    }
-    return <><div id='heart'>{HEART}</div><div id="text" style={{ "font-size": `${textSize}px` }}>{n()}</div></>
-  }
-
-  return <>{n()}</>
+function Child({ style, n }: { style: Accessor<number>; n: Accessor<number> }) {
+  return (
+    <Switch fallback={<>{n()}</>}>
+      <Match when={style() === 0}>
+        {n()}
+      </Match>
+      <Match when={style() === 1}>
+        {[HEART, n()].join("")}
+      </Match>
+      <Match when={style() === 2}>
+        <>
+          <div id="heart">{HEART}</div>
+          <div id="text" style={{ "font-size": `${(DEFAULT_FONT_SIZE / n().toString().length) | 0}px` }}>
+            {n()}
+          </div>
+        </>
+      </Match>
+    </Switch>
+  );
 }
+
 
 function getSize(style: number, n: number) {
   const len = n.toString().length;
   if (style === 0) {
     // only text
-    return { w: DEFAULT_FONT_SIZE * len, h: DEFAULT_FONT_SIZE * len }
+    return { w: DEFAULT_FONT_SIZE * len, h: DEFAULT_FONT_SIZE }
   }
 
   // heart + text
   if (style === 1) {
-    return { w: DEFAULT_FONT_SIZE * (len + 1), h: DEFAULT_FONT_SIZE * (len + 1) }
+    return { w: DEFAULT_FONT_SIZE * (len + 1), h: DEFAULT_FONT_SIZE }
   }
 
   // text in heart
@@ -96,7 +94,7 @@ function App() {
     if (!win) {
       return
     }
-    win.setSize(new PhysicalSize(rect.w, rect.h))
+    win.setSize(new PhysicalSize(rect.w * 1.5, rect.h * 1.5))
   })
 
   let drag = false
