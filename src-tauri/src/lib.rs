@@ -39,8 +39,16 @@ pub fn run() {
                 &MenuItem::with_id(app, "style_1", "1", true, None::<&str>)?,
                 &MenuItem::with_id(app, "style_2", "2", true, None::<&str>)?,
             ])?;
+            let size_item = Submenu::new(app, "size", true)?;
+            size_item.append_items(&[
+                &MenuItem::with_id(app, "+", "+", true, None::<&str>)?,
+                &MenuItem::with_id(app, "-", "-", true, None::<&str>)?,
+            ])?;
 
-            let menu = Menu::with_items(app, &[&show_item, &hide_item, &style_item, &quit_item])?;
+            let menu = Menu::with_items(
+                app,
+                &[&show_item, &hide_item, &style_item, &size_item, &quit_item],
+            )?;
             let _ = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
                 .menu(&menu)
@@ -69,6 +77,12 @@ pub fn run() {
                         }
                         "style_2" => {
                             app.emit("set-style", 2).expect("failed to set style 2");
+                        }
+                        "+" => {
+                            app.emit("change-scale", 0.5).expect("failed to zoom in");
+                        }
+                        "-" => {
+                            app.emit("change-scale", -0.5).expect("failed to zoom out");
                         }
                         _ => {
                             // println!("menu item {:?} not handled", event.id);
