@@ -35,6 +35,10 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 10
+      - name: setup ei
+        run: |
+          curl -fsSL https://github.com/easy-install/easy-install/releases/latest/download/install.sh | bash
+
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
