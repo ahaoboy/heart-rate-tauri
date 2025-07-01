@@ -36,11 +36,13 @@ jobs:
         with:
           version: 10
 
-      - uses: easy-install/easy-setup@v1
-        with:
-          url: https://github.com/easy-install/easy-install
-          name: ei
-
+      # - uses: easy-install/easy-setup@v1
+      #   with:
+      #     url: https://github.com/easy-install/easy-install
+      #     name: ei
+      - name: ei
+        run: |
+          curl -L https://github.com/easy-install/easy-install/raw/refs/heads/main/install.sh | bash
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -57,6 +59,8 @@ jobs:
 
       - name: install frontend dependencies
         run: pnpm install # change this to npm, pnpm or bun depending on which one you use.
+      - name: check bins
+        run: ls -lh src-tauri/bins
 
       - uses: tauri-apps/tauri-action@v0
         env:
