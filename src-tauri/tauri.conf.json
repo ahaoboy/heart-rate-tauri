@@ -12,9 +12,24 @@
   "app": {
     "windows": [
       {
-        "title": "heart-rate-tauri",
-        "width": 800,
-        "height": 600
+        "title": "heart-rate",
+        "width": 64,
+        "height": 64,
+        "x": 64,
+        "y": 64,
+        "visible": true,
+        "fullscreen": false,
+        "closable": true,
+        "resizable": true,
+        "minimizable": true,
+        "decorations": false,
+        "maximizable": true,
+        "transparent": true,
+        "skipTaskbar": true,
+        "alwaysOnTop": true,
+        "focus": true,
+        "shadow": false,
+        "backgroundColor": "#00000000"
       }
     ],
     "security": {
