@@ -1,0 +1,8 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Defining the background (transparent) -->
+  <rect width="256" height="256" fill="none"/>
+  <!-- Heart shape -->
+  <path d="M128 220C128 220 40 160 40 96C40 64 64 40 96 40C112 40 124 48 128 56C132 48 144 40 160 40C192 40 216 64 216 96C216 160 128 220 128 220Z" fill="#FF4D4D"/>
+  <!-- Pulse line through the heart -->
+  <path d="M60 128H90L110 108L140 148L160 108L180 128H196" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
