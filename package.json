@@ -8,18 +8,20 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "preinstall": "bash preinstall.sh"
   },
   "license": "MIT",
   "dependencies": {
-    "solid-js": "1.9.7",
     "@tauri-apps/api": "2.6.0",
-    "@tauri-apps/plugin-opener": "2.4.0"
+    "@tauri-apps/plugin-opener": "2.4.0",
+    "@tauri-apps/plugin-shell": "~2.3.0",
+    "solid-js": "1.9.7"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "2.6.2",
     "typescript": "5.8.3",
     "vite": "7.0.0",
-    "vite-plugin-solid": "2.11.7",
-    "@tauri-apps/cli": "2.6.2"
+    "vite-plugin-solid": "2.11.7"
   }
 }
