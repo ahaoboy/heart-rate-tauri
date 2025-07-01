@@ -1,7 +1,8 @@
-import { createSignal } from "solid-js";
+import { createSignal, onMount } from "solid-js";
 import logo from "./assets/logo.svg";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
+import { listen } from "@tauri-apps/api/event";
 
 function App() {
   const [greetMsg, setGreetMsg] = createSignal("");
@@ -11,6 +12,16 @@ function App() {
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     setGreetMsg(await invoke("greet", { name: name() }));
   }
+
+  onMount(async () => {
+    const inputHandle = await listen<number>("heart-rate", (event) => {
+      console.log('heart-rate', event)
+    })
+
+    console.log('inputHandle', inputHandle)
+
+    await invoke("start_monitoring")
+  })
 
   return (
     <main class="container">
