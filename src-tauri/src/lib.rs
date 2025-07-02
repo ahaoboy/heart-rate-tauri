@@ -1,11 +1,11 @@
+use tauri::Emitter;
 use tauri::menu::{Menu, MenuItem, Submenu};
 use tauri::tray::TrayIconBuilder;
-use tauri::Emitter;
 use tauri::{AppHandle, Manager};
 
 fn start_monitoring(app: tauri::AppHandle) {
-    use tauri_plugin_shell::process::CommandEvent;
     use tauri_plugin_shell::ShellExt;
+    use tauri_plugin_shell::process::CommandEvent;
 
     let sidecar_command = app.shell().sidecar("heart-rate").unwrap();
     let (mut rx, mut _child) = sidecar_command.spawn().expect("Failed to spawn heart-rate");
@@ -33,21 +33,31 @@ pub fn run() {
             let show_item = MenuItem::with_id(app, "show", "Show", true, None::<&str>)?;
             let hide_item = MenuItem::with_id(app, "hide", "Hide", true, None::<&str>)?;
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
-            let style_item = Submenu::new(app, "style", true)?;
+            let reset_item = MenuItem::with_id(app, "reset", "Reset", true, None::<&str>)?;
+            let style_item = Submenu::new(app, "Style", true)?;
             style_item.append_items(&[
                 &MenuItem::with_id(app, "style_0", "0", true, None::<&str>)?,
                 &MenuItem::with_id(app, "style_1", "1", true, None::<&str>)?,
                 &MenuItem::with_id(app, "style_2", "2", true, None::<&str>)?,
             ])?;
-            let size_item = Submenu::new(app, "size", true)?;
+            let size_item = Submenu::new(app, "Size", true)?;
             size_item.append_items(&[
+                &MenuItem::with_id(app, "++", "++", true, None::<&str>)?,
                 &MenuItem::with_id(app, "+", "+", true, None::<&str>)?,
                 &MenuItem::with_id(app, "-", "-", true, None::<&str>)?,
+                &MenuItem::with_id(app, "--", "--", true, None::<&str>)?,
             ])?;
 
             let menu = Menu::with_items(
                 app,
-                &[&show_item, &hide_item, &style_item, &size_item, &quit_item],
+                &[
+                    &show_item,
+                    &hide_item,
+                    &style_item,
+                    &size_item,
+                    &reset_item,
+                    &quit_item,
+                ],
             )?;
             let _ = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
@@ -79,10 +89,19 @@ pub fn run() {
                             app.emit("set-style", 2).expect("failed to set style 2");
                         }
                         "+" => {
-                            app.emit("change-scale", 0.5).expect("failed to zoom in");
+                            app.emit("change-scale", 0.25).expect("failed to zoom in");
                         }
                         "-" => {
+                            app.emit("change-scale", -0.25).expect("failed to zoom out");
+                        }
+                        "++" => {
+                            app.emit("change-scale", 0.5).expect("failed to zoom in");
+                        }
+                        "--" => {
                             app.emit("change-scale", -0.5).expect("failed to zoom out");
+                        }
+                        "reset" => {
+                            app.emit("reset", ()).expect("failed to reset");
                         }
                         _ => {
                             // println!("menu item {:?} not handled", event.id);

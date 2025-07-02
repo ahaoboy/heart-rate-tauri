@@ -12,6 +12,7 @@ import {
   getAllWindows,
   PhysicalPosition,
   PhysicalSize,
+  Window
 } from "@tauri-apps/api/window";
 import { load } from "@tauri-apps/plugin-store";
 
@@ -100,11 +101,19 @@ async function getWin() {
   return win
 }
 
+
+if (import.meta.env.MODE === 'production') {
+  // disable contextmenu
+  document.addEventListener('contextmenu', event => event.preventDefault());
+}
+
 function App() {
   const [getRate, setRate] = createSignal(0);
   const [getStyle, setStyle] = createSignal(DEFAULT_STYLE);
   const [getScale, setScale] = createSignal(DEFAULT_SCALE);
   const [getLoading, setLoading] = createSignal(true);
+
+  let win: Window;
 
   const color = createMemo(() => {
     const rate = getRate();
@@ -117,6 +126,13 @@ function App() {
   });
 
   onMount(async () => {
+    const resetHandle = await listen<number>("reset", async () => {
+      await win.setPosition(new PhysicalPosition(DEFAULT_CONFIG.x, DEFAULT_CONFIG.y));
+      setStyle(DEFAULT_CONFIG.style);
+      setScale(DEFAULT_CONFIG.scale);
+      await store.set(CONFIG_KEY, DEFAULT_CONFIG)
+      await store.save()
+    });
     const inputHandle = await listen<number>("heart-rate", (event) => {
       setRate(+event.payload);
     });
@@ -125,36 +141,33 @@ function App() {
       updateConfig({ style: +event.payload });
     });
     const scaleHandle = await listen<number>("change-scale", (event) => {
-      const scale = getScale() + (+event.payload);
+      const scale = Math.max(0.1, getScale() + (+event.payload));
       setScale(scale);
       updateConfig({ scale });
     });
+
     setLoading(true);
     const config = { ...DEFAULT_CONFIG, ...(await store.get(CONFIG_KEY)) || {} };
     setStyle(config.style);
     setScale(config.scale);
-    const win = await getWin()
-    if (!win) {
-      return;
-    }
+    win = (await getWin())!
     await win.setPosition(new PhysicalPosition(config.x, config.y));
     setLoading(false);
     return () => {
       inputHandle();
       styleHandle();
       scaleHandle();
+      resetHandle();
     };
   });
 
   createEffect(async () => {
     const rect = getSize(getStyle(), getRate());
-    const win = await getWin()
-    if (!win) {
-      return;
+    if (win) {
+      win.setSize(
+        new PhysicalSize(rect.w * 1.5 * getScale(), rect.h * 1.5 * getScale()),
+      );
     }
-    win.setSize(
-      new PhysicalSize(rect.w * 1.5 * getScale(), rect.h * 1.5 * getScale()),
-    );
   });
 
   let drag = false;
