@@ -19,6 +19,9 @@
     "core:app:allow-app-hide",
     "core:webview:allow-webview-hide",
     "core:window:allow-hide",
-    "core:window:allow-show"
+    "core:window:allow-show",
+    "updater:default",
+    "updater:default",
+    "updater:default"
   ]
 }

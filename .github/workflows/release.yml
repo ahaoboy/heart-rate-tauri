@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - release
+    tags:
+      - '*'
+  workflow_dispatch:
 
 defaults:
   run:
@@ -11,11 +14,14 @@ defaults:
 
 env:
   CARGO_TERM_QUIET: true
-
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 # This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
 
 jobs:
   publish-tauri:
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
     permissions:
       contents: write
     strategy:
@@ -66,14 +72,8 @@ jobs:
 
       - name: install frontend dependencies
         run: pnpm install # change this to npm, pnpm or bun depending on which one you use.
-      - name: check bins
-        run: ls -lh src-tauri/bins
 
       - uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: "v__VERSION__"
